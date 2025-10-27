@@ -4,11 +4,9 @@ import { connectToDatabase } from '../lib/mongodb.js';
 
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Routes
 app.post('/api/register', async (req, res) => {
   try {
     const { name } = req.body;
@@ -19,7 +17,6 @@ app.post('/api/register', async (req, res) => {
 
     const { db } = await connectToDatabase();
     
-    // Check if user already exists
     const existingUser = await db.collection('users').findOne({ 
       name: name.trim() 
     });
@@ -28,7 +25,6 @@ app.post('/api/register', async (req, res) => {
       return res.status(400).json({ error: 'Nama sudah digunakan' });
     }
     
-    // Generate unique user ID
     let userId;
     let isUnique = false;
     
@@ -38,7 +34,6 @@ app.post('/api/register', async (req, res) => {
       if (!existingId) isUnique = true;
     }
     
-    // Create new user
     const newUser = {
       name: name.trim(),
       userId,
@@ -85,7 +80,7 @@ app.get('/api/users/:userId', async (req, res) => {
 
 app.post('/api/messages', async (req, res) => {
   try {
-    const { senderId, receiverId, text } = req.body;
+    const { senderId, receiverId, text, replyTo } = req.body;
     
     if (!senderId || !receiverId || !text) {
       return res.status(400).json({ error: 'Data tidak lengkap' });
@@ -93,7 +88,6 @@ app.post('/api/messages', async (req, res) => {
 
     const { db } = await connectToDatabase();
 
-    // Check if users exist
     const sender = await db.collection('users').findOne({ userId: senderId });
     const receiver = await db.collection('users').findOne({ userId: receiverId });
     
@@ -105,6 +99,7 @@ app.post('/api/messages', async (req, res) => {
       senderId,
       receiverId,
       text: text.trim(),
+      replyTo: replyTo || null,
       timestamp: new Date(),
       read: false
     };
@@ -150,7 +145,6 @@ app.get('/api/chats/:userId', async (req, res) => {
     const { userId } = req.params;
     const { db } = await connectToDatabase();
     
-    // Get all unique conversations for this user
     const conversations = await db.collection('messages')
       .aggregate([
         {
@@ -179,7 +173,6 @@ app.get('/api/chats/:userId', async (req, res) => {
       ])
       .toArray();
 
-    // Get user details for each conversation
     const chatList = await Promise.all(
       conversations.map(async (conv) => {
         const user = await db.collection('users').findOne({ 
@@ -225,5 +218,4 @@ app.get('/api/cleanup', async (req, res) => {
   }
 });
 
-// Export for Vercel
 export default app;
