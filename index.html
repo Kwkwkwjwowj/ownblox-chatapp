@@ -3,350 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatApp - Real-time Chat</title>
-    <style>
-        :root {
-            --primary-color: #128C7E;
-            --primary-dark: #075E54;
-            --primary-light: #25D366;
-            --secondary-color: #34B7F1;
-            --background-color: #E5DDD5;
-            --chat-bg: #DCF8C6;
-            --chat-bg-other: #FFFFFF;
-            --text-color: #2A2A2A;
-            --text-light: #757575;
-            --white: #FFFFFF;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--background-color);
-            color: var(--text-color);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .app-container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: var(--white);
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .header {
-            background-color: var(--primary-dark);
-            color: var(--white);
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .user-id {
-            font-size: 12px;
-            background-color: rgba(255, 255, 255, 0.2);
-            padding: 3px 8px;
-            border-radius: 10px;
-        }
-
-        .btn {
-            background-color: var(--primary-color);
-            color: var(--white);
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.2s;
-        }
-
-        .btn:hover {
-            background-color: var(--primary-dark);
-        }
-
-        .btn-outline {
-            background-color: transparent;
-            border: 1px solid var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        .btn-outline:hover {
-            background-color: rgba(18, 140, 126, 0.1);
-        }
-
-        .page {
-            display: none;
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-        }
-
-        .page.active {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        .search-container {
-            position: relative;
-            margin-bottom: 15px;
-        }
-
-        .search-results {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background-color: var(--white);
-            border: 1px solid #ddd;
-            border-top: none;
-            border-radius: 0 0 5px 5px;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 10;
-            display: none;
-        }
-
-        .search-results.active {
-            display: block;
-        }
-
-        .search-result-item {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-            cursor: pointer;
-        }
-
-        .search-result-item:hover {
-            background-color: #f5f5f5;
-        }
-
-        .chat-list {
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .chat-item {
-            display: flex;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .chat-item:hover {
-            background-color: #f5f5f5;
-        }
-
-        .chat-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            font-weight: bold;
-            margin-right: 15px;
-        }
-
-        .chat-info {
-            flex: 1;
-        }
-
-        .chat-name {
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-
-        .chat-last-message {
-            color: var(--text-light);
-            font-size: 14px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .chat-timestamp {
-            font-size: 12px;
-            color: var(--text-light);
-        }
-
-        .chat-header {
-            background-color: var(--primary-dark);
-            color: var(--white);
-            padding: 15px;
-            display: flex;
-            align-items: center;
-        }
-
-        .chat-back {
-            margin-right: 15px;
-            cursor: pointer;
-        }
-
-        .chat-messages {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .message {
-            max-width: 70%;
-            padding: 10px 15px;
-            border-radius: 7.5px;
-            position: relative;
-            word-wrap: break-word;
-        }
-
-        .message.sent {
-            align-self: flex-end;
-            background-color: var(--chat-bg);
-        }
-
-        .message.received {
-            align-self: flex-start;
-            background-color: var(--chat-bg-other);
-        }
-
-        .message-time {
-            font-size: 11px;
-            color: var(--text-light);
-            text-align: right;
-            margin-top: 5px;
-        }
-
-        .chat-input {
-            display: flex;
-            padding: 15px;
-            border-top: 1px solid #eee;
-            background-color: var(--white);
-        }
-
-        .chat-input input {
-            flex: 1;
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            font-size: 16px;
-        }
-
-        .chat-input button {
-            margin-left: 10px;
-            background-color: var(--primary-color);
-            color: var(--white);
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .profile-info {
-            background-color: var(--white);
-            border-radius: 5px;
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            font-weight: bold;
-            font-size: 30px;
-            margin: 0 auto 20px;
-        }
-
-        .profile-id {
-            text-align: center;
-            font-size: 18px;
-            margin-bottom: 20px;
-            padding: 10px;
-            background-color: #f5f5f5;
-            border-radius: 5px;
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: var(--primary-color);
-            color: var(--white);
-            padding: 10px 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            display: none;
-        }
-
-        @media (max-width: 600px) {
-            .app-container {
-                height: 100vh;
-                max-width: 100%;
-            }
-            
-            .message {
-                max-width: 85%;
-            }
-        }
-    </style>
+    <title>WaveChat • Modern Messaging</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app-container">
-        <!-- Header -->
         <div class="header">
-            <div class="logo">ChatApp</div>
+            <div class="logo">
+                <div class="logo-icon">💬</div>
+                WaveChat
+            </div>
             <div class="user-info">
                 <span class="user-id" id="header-user-id">ID: -</span>
                 <button class="btn" id="profile-btn">Profil</button>
@@ -354,384 +20,117 @@
             </div>
         </div>
 
-        <!-- Halaman Login/Register -->
         <div class="page active" id="login-page">
-            <h2>Selamat Datang di ChatApp</h2>
-            <p>Silakan daftar untuk mulai menggunakan aplikasi chat</p>
-            
-            <div class="form-group">
-                <label for="name-input">Nama Anda</label>
-                <input type="text" id="name-input" class="form-control" placeholder="Masukkan nama Anda">
-            </div>
-            
-            <button class="btn" id="register-btn">Daftar & Mulai Chat</button>
-            
-            <div style="margin-top: 20px; font-size: 14px; color: var(--text-light);">
-                <p>Setelah mendaftar, Anda akan mendapatkan ID unik yang dapat digunakan untuk mengidentifikasi Anda di aplikasi.</p>
+            <div class="login-card">
+                <div class="login-icon">💬</div>
+                <h2>Mulai Percakapan</h2>
+                <p>Daftar sekarang untuk terhubung dengan teman dan keluarga melalui chat real-time</p>
+                
+                <div class="form-group">
+                    <label for="name-input">Nama Anda</label>
+                    <input type="text" id="name-input" class="form-control" placeholder="Masukkan nama lengkap Anda">
+                </div>
+                
+                <button class="btn-primary" id="register-btn">
+                    Daftar & Mulai Chat
+                </button>
+                
+                <div style="margin-top: 30px; padding-top: 25px; border-top: 1px solid var(--border);">
+                    <p style="font-size: 14px; color: var(--text-light); line-height: 1.5;">
+                        Setelah mendaftar, Anda akan mendapatkan ID unik yang dapat dibagikan kepada teman untuk memulai percakapan.
+                    </p>
+                </div>
             </div>
         </div>
 
-        <!-- Halaman Daftar Chat -->
         <div class="page" id="chats-page">
             <div class="search-container">
-                <input type="text" id="search-input" class="form-control" placeholder="Cari pengguna dengan ID...">
-                <div class="search-results" id="search-results"></div>
+                <div class="search-box">
+                    <div class="search-icon">🔍</div>
+                    <input type="text" id="search-input" class="search-input" placeholder="Cari pengguna dengan ID...">
+                    <div class="search-results" id="search-results"></div>
+                </div>
             </div>
             
             <div class="chat-list" id="chat-list">
-                <!-- Daftar chat akan dimuat di sini -->
+                <div class="empty-state">
+                    <div class="empty-state-icon">💬</div>
+                    <h3 style="margin-bottom: 10px; color: var(--text-secondary);">Belum ada percakapan</h3>
+                    <p style="color: var(--text-light);">Cari pengguna lain untuk memulai chat pertama Anda</p>
+                </div>
             </div>
         </div>
 
-        <!-- Halaman Chat -->
         <div class="page" id="chat-page">
             <div class="chat-header">
                 <div class="chat-back" id="chat-back-btn">←</div>
-                <div id="chat-with-name">Nama Pengguna</div>
+                <div class="chat-with-info">
+                    <div class="chat-with-avatar" id="chat-with-avatar">U</div>
+                    <div>
+                        <div id="chat-with-name">Nama Pengguna</div>
+                        <div style="font-size: 12px; color: var(--text-light);">Online</div>
+                    </div>
+                </div>
             </div>
             
             <div class="chat-messages" id="chat-messages">
-                <!-- Pesan akan dimuat di sini -->
+                <div class="empty-state">
+                    <div class="empty-state-icon">💭</div>
+                    <p style="color: var(--text-light);">Mulai percakapan dengan mengirim pesan pertama</p>
+                </div>
             </div>
             
-            <div class="chat-input">
-                <input type="text" id="message-input" placeholder="Ketik pesan...">
-                <button id="send-btn">➤</button>
+            <div class="chat-input-container">
+                <div class="reply-preview" id="reply-preview" style="display: none;">
+                    <div class="reply-info">
+                        <div class="reply-sender" id="reply-sender-name">User</div>
+                        <div class="reply-text" id="reply-text-preview">Pesan yang dibalas...</div>
+                    </div>
+                    <button class="cancel-reply" id="cancel-reply-btn">✕</button>
+                </div>
+                <div class="chat-input-wrapper">
+                    <input type="text" id="message-input" class="message-input" placeholder="Ketik pesan...">
+                    <button class="send-btn" id="send-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22,2 15,22 11,13 2,9"></polygon>
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
 
-        <!-- Halaman Profil -->
         <div class="page" id="profile-page">
-            <h2>Profil Saya</h2>
-            
-            <div class="profile-info">
+            <div class="profile-card">
+                <h2 style="text-align: center; margin-bottom: 30px; background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 28px;">Profil Saya</h2>
+                
                 <div class="profile-avatar" id="profile-avatar">U</div>
-                <div class="form-group">
+                
+                <div class="profile-info-item">
                     <label>Nama</label>
-                    <div class="form-control" id="profile-name">-</div>
+                    <div class="profile-info-value" id="profile-name">-</div>
                 </div>
                 
-                <div class="form-group">
+                <div class="profile-info-item">
                     <label>ID Anda</label>
-                    <div class="profile-id" id="profile-id">-</div>
+                    <div class="profile-info-value profile-id" id="profile-id">-</div>
                 </div>
                 
-                <p style="margin-top: 20px; color: var(--text-light); font-size: 14px;">
-                    Bagikan ID ini kepada teman Anda agar mereka dapat menemukan dan mengobrol dengan Anda.
-                </p>
+                <div style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border-radius: 12px; border-left: 4px solid var(--primary-blue);">
+                    <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.5; margin: 0;">
+                        <strong>Tips:</strong> Bagikan ID ini kepada teman Anda agar mereka dapat menemukan dan mengobrol dengan Anda di WaveChat.
+                    </p>
+                </div>
             </div>
             
-            <button class="btn" id="back-from-profile-btn" style="margin-top: 20px;">Kembali ke Chat</button>
+            <button class="btn-primary" id="back-from-profile-btn" style="margin: 30px auto 0; display: block; max-width: 200px;">
+                Kembali ke Chat
+            </button>
         </div>
     </div>
 
-    <!-- Notifikasi -->
     <div class="notification" id="notification"></div>
 
-    <script>
-        const API_BASE = '/api';
-        let currentUser = null;
-        let currentChatWith = null;
-
-        // DOM Elements
-        const loginPage = document.getElementById('login-page');
-        const chatsPage = document.getElementById('chats-page');
-        const chatPage = document.getElementById('chat-page');
-        const profilePage = document.getElementById('profile-page');
-        const nameInput = document.getElementById('name-input');
-        const registerBtn = document.getElementById('register-btn');
-        const profileBtn = document.getElementById('profile-btn');
-        const logoutBtn = document.getElementById('logout-btn');
-        const headerUserId = document.getElementById('header-user-id');
-        const searchInput = document.getElementById('search-input');
-        const searchResults = document.getElementById('search-results');
-        const chatList = document.getElementById('chat-list');
-        const chatBackBtn = document.getElementById('chat-back-btn');
-        const chatWithName = document.getElementById('chat-with-name');
-        const chatMessages = document.getElementById('chat-messages');
-        const messageInput = document.getElementById('message-input');
-        const sendBtn = document.getElementById('send-btn');
-        const profileAvatar = document.getElementById('profile-avatar');
-        const profileName = document.getElementById('profile-name');
-        const profileId = document.getElementById('profile-id');
-        const backFromProfileBtn = document.getElementById('back-from-profile-btn');
-        const notification = document.getElementById('notification');
-
-        // Fungsi untuk menampilkan notifikasi
-        function showNotification(message, duration = 3000) {
-            notification.textContent = message;
-            notification.style.display = 'block';
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, duration);
-        }
-
-        // Fungsi untuk mendapatkan inisial nama
-        function getInitials(name) {
-            return name.split(' ').map(word => word[0]).join('').toUpperCase();
-        }
-
-        // Fungsi untuk memformat waktu
-        function formatTime(timestamp) {
-            const date = new Date(timestamp);
-            return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-        }
-
-        // Fungsi untuk beralih halaman
-        function showPage(page) {
-            loginPage.classList.remove('active');
-            chatsPage.classList.remove('active');
-            chatPage.classList.remove('active');
-            profilePage.classList.remove('active');
-            page.classList.add('active');
-        }
-
-        // Fungsi untuk mendaftar pengguna baru
-        async function registerUser(name) {
-            try {
-                const response = await fetch(`${API_BASE}/register`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ name })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    loginUser(data.user);
-                    showNotification('Registrasi berhasil!');
-                } else {
-                    showNotification(data.error || 'Gagal mendaftar');
-                }
-            } catch (error) {
-                showNotification('Error koneksi ke server');
-            }
-        }
-
-        // Fungsi untuk login pengguna
-        function loginUser(user) {
-            currentUser = user;
-            localStorage.setItem('currentUser', JSON.stringify(user));
-            
-            // Update UI
-            headerUserId.textContent = `ID: ${user.userId}`;
-            profileAvatar.textContent = getInitials(user.name);
-            profileName.textContent = user.name;
-            profileId.textContent = user.userId;
-            
-            showPage(chatsPage);
-            loadChatList();
-        }
-
-        // Fungsi untuk logout
-        function logout() {
-            currentUser = null;
-            localStorage.removeItem('currentUser');
-            showPage(loginPage);
-            nameInput.value = '';
-        }
-
-        // Fungsi untuk mencari pengguna berdasarkan ID
-        async function searchUsers(query) {
-            if (!query.trim()) {
-                searchResults.classList.remove('active');
-                return;
-            }
-            
-            try {
-                const response = await fetch(`${API_BASE}/users/${query}`);
-                
-                if (response.ok) {
-                    const user = await response.json();
-                    
-                    searchResults.innerHTML = '';
-                    const resultItem = document.createElement('div');
-                    resultItem.className = 'search-result-item';
-                    resultItem.innerHTML = `
-                        <div><strong>${user.name}</strong></div>
-                        <div style="font-size: 12px; color: var(--text-light);">ID: ${user.userId}</div>
-                    `;
-                    resultItem.addEventListener('click', () => {
-                        startChat(user);
-                        searchInput.value = '';
-                        searchResults.classList.remove('active');
-                    });
-                    searchResults.appendChild(resultItem);
-                    searchResults.classList.add('active');
-                } else {
-                    showNoResults();
-                }
-            } catch (error) {
-                showNoResults();
-            }
-        }
-
-        function showNoResults() {
-            searchResults.innerHTML = '';
-            const noResult = document.createElement('div');
-            noResult.className = 'search-result-item';
-            noResult.textContent = 'Tidak ada pengguna dengan ID tersebut';
-            searchResults.appendChild(noResult);
-            searchResults.classList.add('active');
-        }
-
-        // Fungsi untuk memulai chat dengan pengguna
-        function startChat(user) {
-            currentChatWith = user;
-            chatWithName.textContent = user.name;
-            showPage(chatPage);
-            loadChatMessages();
-            
-            setTimeout(() => {
-                messageInput.focus();
-            }, 100);
-        }
-
-        // Fungsi untuk memuat daftar chat
-        async function loadChatList() {
-            try {
-                const response = await fetch(`${API_BASE}/chats/${currentUser.userId}`);
-                const chats = await response.json();
-                
-                chatList.innerHTML = '';
-                
-                if (chats.length === 0) {
-                    const noChats = document.createElement('div');
-                    noChats.style.padding = '20px';
-                    noChats.style.textAlign = 'center';
-                    noChats.style.color = 'var(--text-light)';
-                    noChats.textContent = 'Belum ada percakapan. Cari pengguna untuk memulai chat.';
-                    chatList.appendChild(noChats);
-                } else {
-                    chats.forEach(chat => {
-                        const chatItem = document.createElement('div');
-                        chatItem.className = 'chat-item';
-                        chatItem.innerHTML = `
-                            <div class="chat-avatar">${getInitials(chat.user.name)}</div>
-                            <div class="chat-info">
-                                <div class="chat-name">${chat.user.name}</div>
-                                <div class="chat-last-message">${chat.lastMessage.text}</div>
-                            </div>
-                            <div class="chat-timestamp">${formatTime(chat.lastMessage.timestamp)}</div>
-                        `;
-                        chatItem.addEventListener('click', () => startChat(chat.user));
-                        chatList.appendChild(chatItem);
-                    });
-                }
-            } catch (error) {
-                console.error('Error loading chats:', error);
-            }
-        }
-
-        // Fungsi untuk memuat pesan dalam chat
-        async function loadChatMessages() {
-            try {
-                const response = await fetch(`${API_BASE}/messages/${currentUser.userId}/${currentChatWith.userId}`);
-                const messages = await response.json();
-                
-                chatMessages.innerHTML = '';
-                
-                messages.forEach(message => {
-                    const messageEl = document.createElement('div');
-                    messageEl.className = `message ${message.senderId === currentUser.userId ? 'sent' : 'received'}`;
-                    messageEl.innerHTML = `
-                        <div>${message.text}</div>
-                        <div class="message-time">${formatTime(message.timestamp)}</div>
-                    `;
-                    chatMessages.appendChild(messageEl);
-                });
-                
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            } catch (error) {
-                console.error('Error loading messages:', error);
-            }
-        }
-
-        // Fungsi untuk mengirim pesan
-        async function sendMessage() {
-            const text = messageInput.value.trim();
-            if (!text) return;
-            
-            try {
-                const response = await fetch(`${API_BASE}/messages`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        senderId: currentUser.userId,
-                        receiverId: currentChatWith.userId,
-                        text: text
-                    })
-                });
-                
-                if (response.ok) {
-                    messageInput.value = '';
-                    loadChatMessages();
-                    loadChatList();
-                } else {
-                    showNotification('Gagal mengirim pesan');
-                }
-            } catch (error) {
-                showNotification('Error mengirim pesan');
-            }
-        }
-
-        // Event Listeners
-        registerBtn.addEventListener('click', () => {
-            const name = nameInput.value.trim();
-            if (name) {
-                registerUser(name);
-            } else {
-                showNotification('Silakan masukkan nama Anda');
-            }
-        });
-
-        profileBtn.addEventListener('click', () => {
-            showPage(profilePage);
-        });
-
-        logoutBtn.addEventListener('click', logout);
-
-        searchInput.addEventListener('input', (e) => {
-            searchUsers(e.target.value);
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-                searchResults.classList.remove('active');
-            }
-        });
-
-        chatBackBtn.addEventListener('click', () => {
-            showPage(chatsPage);
-            currentChatWith = null;
-        });
-
-        sendBtn.addEventListener('click', sendMessage);
-
-        messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
-
-        backFromProfileBtn.addEventListener('click', () => {
-            showPage(chatsPage);
-        });
-
-        // Inisialisasi aplikasi
-        function initApp() {
-            const savedUser = localStorage.getItem('currentUser');
-            if (savedUser) {
-                const user = JSON.parse(savedUser);
-                loginUser(user);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', initApp);
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
