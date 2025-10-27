@@ -17,6 +17,14 @@ app.post('/api/register', async (req, res) => {
 
     const { db } = await connectToDatabase();
     
+    const existingUser = await db.collection('users').findOne({ 
+      name: name.trim() 
+    });
+    
+    if (existingUser) {
+      return res.status(400).json({ error: 'Nama sudah digunakan' });
+    }
+    
     let userId;
     let isUnique = false;
     
@@ -29,7 +37,8 @@ app.post('/api/register', async (req, res) => {
     const newUser = {
       name: name.trim(),
       userId,
-      createdAt: new Date()
+      createdAt: new Date(),
+      lastActive: new Date()
     };
     
     await db.collection('users').insertOne(newUser);
@@ -44,6 +53,65 @@ app.post('/api/register', async (req, res) => {
     
   } catch (error) {
     console.error('Register error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/api/login', async (req, res) => {
+  try {
+    const { userId } = req.body;
+    
+    if (!userId) {
+      return res.status(400).json({ error: 'User ID tidak boleh kosong' });
+    }
+
+    const { db } = await connectToDatabase();
+    
+    const user = await db.collection('users').findOne({ userId });
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User ID tidak ditemukan' });
+    }
+
+    await db.collection('users').updateOne(
+      { userId },
+      { $set: { lastActive: new Date() } }
+    );
+    
+    res.json({
+      success: true,
+      user: {
+        name: user.name,
+        userId: user.userId
+      }
+    });
+    
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.get('/api/search/:query', async (req, res) => {
+  try {
+    const { query } = req.params;
+    const { db } = await connectToDatabase();
+    
+    const users = await db.collection('users')
+      .find({
+        $or: [
+          { userId: { $regex: query, $options: 'i' } },
+          { name: { $regex: query, $options: 'i' } }
+        ]
+      })
+      .project({ name: 1, userId: 1 })
+      .limit(10)
+      .toArray();
+    
+    res.json(users);
+    
+  } catch (error) {
+    console.error('Search error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -73,28 +141,6 @@ app.delete('/api/users/:userId', async (req, res) => {
     
   } catch (error) {
     console.error('Delete user error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-app.get('/api/users/:userId', async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const { db } = await connectToDatabase();
-    
-    const user = await db.collection('users').findOne({ userId });
-    
-    if (!user) {
-      return res.status(404).json({ error: 'User tidak ditemukan' });
-    }
-    
-    res.json({
-      name: user.name,
-      userId: user.userId
-    });
-    
-  } catch (error) {
-    console.error('Search user error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -134,6 +180,28 @@ app.post('/api/messages', async (req, res) => {
     
   } catch (error) {
     console.error('Send message error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.delete('/api/messages/:messageId', async (req, res) => {
+  try {
+    const { messageId } = req.params;
+    const { db } = await connectToDatabase();
+    
+    const result = await db.collection('messages').deleteOne({ _id: messageId });
+    
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: 'Pesan tidak ditemukan' });
+    }
+    
+    res.json({
+      success: true,
+      message: 'Pesan berhasil dihapus'
+    });
+    
+  } catch (error) {
+    console.error('Delete message error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
