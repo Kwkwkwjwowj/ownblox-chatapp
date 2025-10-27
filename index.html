@@ -22,9 +22,6 @@
             --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
             --chat-bg-sent: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
             --chat-bg-received: var(--surface);
-            --success: #10b981;
-            --warning: #f59e0b;
-            --error: #ef4444;
         }
 
         * {
@@ -46,38 +43,35 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            max-width: 1200px;
-            margin: 0 auto;
+            width: 100%;
             background: var(--surface);
-            box-shadow: var(--shadow-lg);
-            border-radius: 20px;
-            overflow: hidden;
-            margin: 20px;
         }
 
         .header {
             background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
             color: white;
-            padding: 20px 25px;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: var(--shadow);
+            min-height: 70px;
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 24px;
+            gap: 10px;
+            font-size: 18px;
             font-weight: 700;
+            flex-shrink: 0;
         }
 
         .logo-icon {
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -87,14 +81,16 @@
         .user-info {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
         }
 
         .user-id {
-            font-size: 13px;
+            font-size: 11px;
             background: rgba(255, 255, 255, 0.2);
-            padding: 6px 12px;
-            border-radius: 20px;
+            padding: 4px 8px;
+            border-radius: 12px;
             backdrop-filter: blur(10px);
             font-weight: 500;
         }
@@ -103,18 +99,18 @@
             background: rgba(255, 255, 255, 0.2);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 12px;
+            padding: 6px 12px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
+            white-space: nowrap;
         }
 
         .btn:hover {
             background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
         }
 
         .page {
@@ -132,36 +128,36 @@
             background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
             align-items: center;
             justify-content: center;
-            padding: 40px;
+            padding: 20px;
         }
 
         .login-card {
             background: var(--surface);
-            padding: 50px 40px;
-            border-radius: 24px;
+            padding: 30px 25px;
+            border-radius: 20px;
             box-shadow: var(--shadow-lg);
             text-align: center;
-            max-width: 440px;
             width: 100%;
+            max-width: 400px;
         }
 
         .login-icon {
-            width: 80px;
-            height: 80px;
+            width: 60px;
+            height: 60px;
             background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
-            border-radius: 20px;
-            margin: 0 auto 25px;
+            border-radius: 15px;
+            margin: 0 auto 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 32px;
+            font-size: 24px;
             color: white;
         }
 
         .login-card h2 {
-            font-size: 28px;
+            font-size: 22px;
             font-weight: 700;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -169,28 +165,29 @@
 
         .login-card p {
             color: var(--text-secondary);
-            margin-bottom: 35px;
-            font-size: 16px;
-            line-height: 1.6;
+            margin-bottom: 25px;
+            font-size: 14px;
+            line-height: 1.5;
         }
 
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             text-align: left;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 600;
             color: var(--text-primary);
+            font-size: 14px;
         }
 
         .form-control {
             width: 100%;
-            padding: 16px 20px;
+            padding: 12px 16px;
             border: 2px solid var(--border);
-            border-radius: 14px;
+            border-radius: 12px;
             font-size: 16px;
             transition: all 0.3s ease;
             background: var(--surface);
@@ -206,8 +203,8 @@
             background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
             color: white;
             border: none;
-            padding: 16px 32px;
-            border-radius: 14px;
+            padding: 14px 28px;
+            border-radius: 12px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
@@ -225,7 +222,7 @@
         }
 
         .search-container {
-            padding: 25px;
+            padding: 20px;
             background: var(--surface);
             border-bottom: 1px solid var(--border);
         }
@@ -236,7 +233,7 @@
 
         .search-icon {
             position: absolute;
-            left: 18px;
+            left: 16px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-light);
@@ -244,10 +241,10 @@
 
         .search-input {
             width: 100%;
-            padding: 16px 16px 16px 50px;
+            padding: 14px 14px 14px 45px;
             border: 2px solid var(--border);
-            border-radius: 16px;
-            font-size: 15px;
+            border-radius: 14px;
+            font-size: 16px;
             background: var(--background);
             transition: all 0.3s ease;
         }
@@ -266,7 +263,7 @@
             background: var(--surface);
             border: 2px solid var(--border);
             border-top: none;
-            border-radius: 0 0 16px 16px;
+            border-radius: 0 0 14px 14px;
             max-height: 200px;
             overflow-y: auto;
             z-index: 100;
@@ -279,13 +276,13 @@
         }
 
         .search-result-item {
-            padding: 16px 20px;
+            padding: 14px 18px;
             border-bottom: 1px solid var(--border);
             cursor: pointer;
             transition: background 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .search-result-item:hover {
@@ -293,16 +290,16 @@
         }
 
         .search-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
             background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 12px;
         }
 
         .chat-list {
@@ -314,9 +311,9 @@
         .chat-item {
             display: flex;
             align-items: center;
-            padding: 20px;
-            border-radius: 16px;
-            margin: 8px 0;
+            padding: 16px;
+            border-radius: 14px;
+            margin: 6px 0;
             cursor: pointer;
             transition: all 0.3s ease;
             background: var(--surface);
@@ -324,62 +321,70 @@
 
         .chat-item:hover {
             background: var(--background);
-            transform: translateX(5px);
         }
 
         .chat-avatar {
-            width: 56px;
-            height: 56px;
-            border-radius: 16px;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
             background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 700;
-            font-size: 18px;
-            margin-right: 16px;
+            font-size: 16px;
+            margin-right: 14px;
+            flex-shrink: 0;
         }
 
         .chat-info {
             flex: 1;
+            min-width: 0;
         }
 
         .chat-name {
             font-weight: 600;
-            font-size: 16px;
-            margin-bottom: 6px;
+            font-size: 15px;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .chat-last-message {
             color: var(--text-secondary);
-            font-size: 14px;
+            font-size: 13px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
         .chat-timestamp {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-light);
             font-weight: 500;
+            flex-shrink: 0;
+            margin-left: 8px;
         }
 
         .chat-header {
             background: var(--surface);
-            padding: 20px 25px;
+            padding: 16px 20px;
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            min-height: 70px;
         }
 
         .chat-back {
-            margin-right: 20px;
+            margin-right: 16px;
             cursor: pointer;
-            padding: 10px;
-            border-radius: 12px;
+            padding: 8px;
+            border-radius: 10px;
             transition: background 0.2s ease;
+            flex-shrink: 0;
         }
 
         .chat-back:hover {
@@ -389,35 +394,38 @@
         .chat-with-info {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+            flex: 1;
+            min-width: 0;
         }
 
         .chat-with-avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
             background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 600;
+            flex-shrink: 0;
         }
 
         .chat-messages {
             flex: 1;
-            padding: 25px;
+            padding: 20px;
             overflow-y: auto;
             background: var(--background);
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 12px;
         }
 
         .message {
-            max-width: 70%;
-            padding: 16px 20px;
-            border-radius: 20px;
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 18px;
             position: relative;
             word-wrap: break-word;
             animation: messageSlide 0.3s ease-out;
@@ -438,7 +446,7 @@
             align-self: flex-end;
             background: var(--chat-bg-sent);
             color: white;
-            border-bottom-right-radius: 8px;
+            border-bottom-right-radius: 6px;
         }
 
         .message.received {
@@ -446,14 +454,14 @@
             background: var(--chat-bg-received);
             color: var(--text-primary);
             border: 1px solid var(--border);
-            border-bottom-left-radius: 8px;
+            border-bottom-left-radius: 6px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         .message-time {
-            font-size: 11px;
+            font-size: 10px;
             opacity: 0.8;
-            margin-top: 6px;
+            margin-top: 4px;
             text-align: right;
         }
 
@@ -464,10 +472,10 @@
         .reply-indicator {
             background: rgba(0, 0, 0, 0.1);
             border-left: 3px solid var(--primary-blue);
-            padding: 8px 12px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            font-size: 13px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            font-size: 12px;
         }
 
         .message.received .reply-indicator {
@@ -477,34 +485,39 @@
         .reply-sender {
             font-weight: 600;
             color: var(--primary-blue);
-            margin-bottom: 4px;
+            margin-bottom: 2px;
+            font-size: 11px;
         }
 
         .chat-input-container {
-            padding: 20px 25px;
+            padding: 16px 20px;
             background: var(--surface);
             border-top: 1px solid var(--border);
         }
 
         .reply-preview {
             background: var(--background);
-            padding: 12px 16px;
-            border-radius: 12px;
-            margin-bottom: 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-bottom: 10px;
             border-left: 4px solid var(--primary-blue);
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
         }
 
         .reply-info {
             flex: 1;
+            min-width: 0;
         }
 
         .reply-text {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-secondary);
-            margin-top: 4px;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .cancel-reply {
@@ -514,6 +527,8 @@
             cursor: pointer;
             padding: 4px;
             border-radius: 6px;
+            flex-shrink: 0;
+            margin-left: 8px;
         }
 
         .cancel-reply:hover {
@@ -522,18 +537,19 @@
 
         .chat-input-wrapper {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             align-items: center;
         }
 
         .message-input {
             flex: 1;
-            padding: 16px 24px;
+            padding: 14px 20px;
             border: 2px solid var(--border);
-            border-radius: 25px;
-            font-size: 15px;
+            border-radius: 20px;
+            font-size: 16px;
             background: var(--background);
             transition: all 0.3s ease;
+            min-width: 0;
         }
 
         .message-input:focus {
@@ -543,8 +559,8 @@
         }
 
         .send-btn {
-            width: 50px;
-            height: 50px;
+            width: 44px;
+            height: 44px;
             border: none;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
@@ -555,6 +571,7 @@
             justify-content: center;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            flex-shrink: 0;
         }
 
         .send-btn:hover {
@@ -564,51 +581,52 @@
 
         #profile-page {
             background: var(--background);
-            padding: 30px;
+            padding: 20px;
+            overflow-y: auto;
         }
 
         .profile-card {
             background: var(--surface);
-            border-radius: 20px;
-            padding: 40px;
+            border-radius: 16px;
+            padding: 30px 25px;
             box-shadow: var(--shadow);
-            max-width: 480px;
-            margin: 0 auto;
             width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
         }
 
         .profile-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 20px;
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
             background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
-            margin: 0 auto 25px;
+            margin: 0 auto 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 36px;
+            font-size: 28px;
             font-weight: 700;
-            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
         }
 
         .profile-info-item {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .profile-info-item label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 600;
             color: var(--text-secondary);
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .profile-info-value {
-            padding: 16px 20px;
+            padding: 14px 16px;
             background: var(--background);
-            border-radius: 12px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 15px;
             font-weight: 500;
             border: 2px solid var(--border);
         }
@@ -619,22 +637,23 @@
             color: var(--primary-blue);
             font-weight: 600;
             text-align: center;
-            font-size: 18px;
-            letter-spacing: 1px;
+            font-size: 16px;
+            letter-spacing: 0.5px;
         }
 
         .notification {
             position: fixed;
-            top: 30px;
-            right: 30px;
+            top: 20px;
+            right: 20px;
             background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
             color: white;
-            padding: 16px 24px;
-            border-radius: 14px;
+            padding: 14px 20px;
+            border-radius: 12px;
             box-shadow: var(--shadow-lg);
             z-index: 1000;
             display: none;
             animation: slideIn 0.3s ease-out;
+            max-width: calc(100vw - 40px);
         }
 
         @keyframes slideIn {
@@ -648,68 +667,28 @@
             }
         }
 
-        @media (max-width: 768px) {
-            .app-container {
-                margin: 0;
-                border-radius: 0;
-                height: 100vh;
-            }
-            
-            .message {
-                max-width: 85%;
-            }
-            
-            .login-card {
-                margin: 20px;
-                padding: 40px 30px;
-            }
-            
-            .profile-card {
-                margin: 20px;
-                padding: 30px 25px;
-            }
-        }
-
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--border);
-            border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary-blue);
-            border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-dark);
-        }
-
         .empty-state {
             text-align: center;
-            padding: 60px 40px;
+            padding: 40px 20px;
             color: var(--text-secondary);
         }
 
         .empty-state-icon {
-            font-size: 48px;
-            margin-bottom: 20px;
+            font-size: 36px;
+            margin-bottom: 16px;
             opacity: 0.5;
         }
 
         .message-actions {
             position: absolute;
-            top: -10px;
-            right: -10px;
+            top: -8px;
+            right: -8px;
             background: var(--surface);
-            border-radius: 20px;
+            border-radius: 16px;
             box-shadow: var(--shadow);
             display: none;
-            gap: 4px;
-            padding: 4px;
+            gap: 3px;
+            padding: 3px;
         }
 
         .message:hover .message-actions {
@@ -717,8 +696,8 @@
         }
 
         .message-action-btn {
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
             border: none;
             border-radius: 50%;
             background: var(--background);
@@ -727,13 +706,75 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 10px;
             transition: all 0.2s ease;
         }
 
         .message-action-btn:hover {
             background: var(--primary-blue);
             color: white;
+        }
+
+        @media (min-width: 768px) {
+            .app-container {
+                max-width: 1200px;
+                margin: 20px auto;
+                border-radius: 20px;
+                height: calc(100vh - 40px);
+            }
+            
+            .header {
+                padding: 20px 25px;
+            }
+            
+            .logo {
+                font-size: 24px;
+            }
+            
+            .logo-icon {
+                width: 32px;
+                height: 32px;
+            }
+            
+            .user-id {
+                font-size: 13px;
+                padding: 6px 12px;
+            }
+            
+            .btn {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+            
+            .message {
+                max-width: 70%;
+            }
+            
+            .login-card {
+                padding: 50px 40px;
+            }
+            
+            .profile-card {
+                padding: 40px;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--border);
+            border-radius: 2px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-blue);
+            border-radius: 2px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
         }
     </style>
 </head>
@@ -742,7 +783,7 @@
         <div class="header">
             <div class="logo">
                 <div class="logo-icon">💬</div>
-                WaveChat
+                OwnBlox ChatApp
             </div>
             <div class="user-info">
                 <span class="user-id" id="header-user-id">ID: -</span>
@@ -766,8 +807,8 @@
                     Daftar & Mulai Chat
                 </button>
                 
-                <div style="margin-top: 30px; padding-top: 25px; border-top: 1px solid var(--border);">
-                    <p style="font-size: 14px; color: var(--text-light); line-height: 1.5;">
+                <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border);">
+                    <p style="font-size: 13px; color: var(--text-light); line-height: 1.4;">
                         Setelah mendaftar, Anda akan mendapatkan ID unik yang dapat dibagikan kepada teman untuk memulai percakapan.
                     </p>
                 </div>
@@ -786,8 +827,8 @@
             <div class="chat-list" id="chat-list">
                 <div class="empty-state">
                     <div class="empty-state-icon">💬</div>
-                    <h3 style="margin-bottom: 10px; color: var(--text-secondary);">Belum ada percakapan</h3>
-                    <p style="color: var(--text-light);">Cari pengguna lain untuk memulai chat pertama Anda</p>
+                    <h3 style="margin-bottom: 8px; color: var(--text-secondary); font-size: 16px;">Belum ada percakapan</h3>
+                    <p style="color: var(--text-light); font-size: 14px;">Cari pengguna lain untuk memulai chat pertama Anda</p>
                 </div>
             </div>
         </div>
@@ -797,9 +838,9 @@
                 <div class="chat-back" id="chat-back-btn">←</div>
                 <div class="chat-with-info">
                     <div class="chat-with-avatar" id="chat-with-avatar">U</div>
-                    <div>
-                        <div id="chat-with-name">Nama Pengguna</div>
-                        <div style="font-size: 12px; color: var(--text-light);">Online</div>
+                    <div style="min-width: 0;">
+                        <div id="chat-with-name" style="font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Nama Pengguna</div>
+                        <div style="font-size: 11px; color: var(--text-light);">Online</div>
                     </div>
                 </div>
             </div>
@@ -807,7 +848,7 @@
             <div class="chat-messages" id="chat-messages">
                 <div class="empty-state">
                     <div class="empty-state-icon">💭</div>
-                    <p style="color: var(--text-light);">Mulai percakapan dengan mengirim pesan pertama</p>
+                    <p style="color: var(--text-light); font-size: 14px;">Mulai percakapan dengan mengirim pesan pertama</p>
                 </div>
             </div>
             
@@ -822,7 +863,7 @@
                 <div class="chat-input-wrapper">
                     <input type="text" id="message-input" class="message-input" placeholder="Ketik pesan...">
                     <button class="send-btn" id="send-btn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="22" y1="2" x2="11" y2="13"></line>
                             <polygon points="22,2 15,22 11,13 2,9"></polygon>
                         </svg>
@@ -833,7 +874,7 @@
 
         <div class="page" id="profile-page">
             <div class="profile-card">
-                <h2 style="text-align: center; margin-bottom: 30px; background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 28px;">Profil Saya</h2>
+                <h2 style="text-align: center; margin-bottom: 25px; background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 24px;">Profil Saya</h2>
                 
                 <div class="profile-avatar" id="profile-avatar">U</div>
                 
@@ -847,14 +888,14 @@
                     <div class="profile-info-value profile-id" id="profile-id">-</div>
                 </div>
                 
-                <div style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border-radius: 12px; border-left: 4px solid var(--primary-blue);">
-                    <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.5; margin: 0;">
-                        <strong>Tips:</strong> Bagikan ID ini kepada teman Anda agar mereka dapat menemukan dan mengobrol dengan Anda di WaveChat.
+                <div style="margin-top: 25px; padding: 16px; background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border-radius: 10px; border-left: 4px solid var(--primary-blue);">
+                    <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.4; margin: 0;">
+                        <strong>Tips:</strong> Bagikan ID ini kepada teman Anda agar mereka dapat menemukan dan mengobrol dengan Anda di OwnBlox ChatApp.
                     </p>
                 </div>
             </div>
             
-            <button class="btn-primary" id="back-from-profile-btn" style="margin: 30px auto 0; display: block; max-width: 200px;">
+            <button class="btn-primary" id="back-from-profile-btn" style="margin: 25px auto 0; display: block; max-width: 200px; padding: 12px 24px;">
                 Kembali ke Chat
             </button>
         </div>
@@ -958,22 +999,22 @@
         }
 
         async function logout() {
-    if (currentUser) {
-        try {
-            await fetch(`${API_BASE}/users/${currentUser.userId}`, {
-                method: 'DELETE'
-            });
-        } catch (error) {
-            console.error('Error deleting user:', error);
+            if (currentUser) {
+                try {
+                    await fetch(`${API_BASE}/users/${currentUser.userId}`, {
+                        method: 'DELETE'
+                    });
+                } catch (error) {
+                    console.error('Error deleting user:', error);
+                }
+            }
+            
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            showPage(loginPage);
+            nameInput.value = '';
+            showNotification('👋 Logout berhasil! Data Anda telah dihapus');
         }
-    }
-    
-    currentUser = null;
-    localStorage.removeItem('currentUser');
-    showPage(loginPage);
-    nameInput.value = '';
-    showNotification('👋 Logout berhasil! Data Anda telah dihapus');
-}
 
         async function searchUsers(query) {
             if (!query.trim()) {
@@ -992,9 +1033,9 @@
                     resultItem.className = 'search-result-item';
                     resultItem.innerHTML = `
                         <div class="search-avatar">${getInitials(user.name)}</div>
-                        <div>
-                            <div style="font-weight: 600;">${user.name}</div>
-                            <div style="font-size: 12px; color: var(--text-light);">ID: ${user.userId}</div>
+                        <div style="min-width: 0;">
+                            <div style="font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${user.name}</div>
+                            <div style="font-size: 11px; color: var(--text-light);">ID: ${user.userId}</div>
                         </div>
                     `;
                     resultItem.addEventListener('click', () => {
@@ -1018,6 +1059,7 @@
             noResult.className = 'search-result-item';
             noResult.style.justifyContent = 'center';
             noResult.style.color = 'var(--text-light)';
+            noResult.style.fontSize = '14px';
             noResult.textContent = 'Tidak ada pengguna dengan ID tersebut';
             searchResults.appendChild(noResult);
             searchResults.classList.add('active');
@@ -1047,8 +1089,8 @@
                     noChats.className = 'empty-state';
                     noChats.innerHTML = `
                         <div class="empty-state-icon">💬</div>
-                        <h3 style="margin-bottom: 10px; color: var(--text-secondary);">Belum ada percakapan</h3>
-                        <p style="color: var(--text-light);">Cari pengguna lain untuk memulai chat pertama Anda</p>
+                        <h3 style="margin-bottom: 8px; color: var(--text-secondary); font-size: 16px;">Belum ada percakapan</h3>
+                        <p style="color: var(--text-light); font-size: 14px;">Cari pengguna lain untuk memulai chat pertama Anda</p>
                     `;
                     chatList.appendChild(noChats);
                 } else {
@@ -1084,7 +1126,7 @@
                     emptyState.className = 'empty-state';
                     emptyState.innerHTML = `
                         <div class="empty-state-icon">💭</div>
-                        <p style="color: var(--text-light);">Mulai percakapan dengan mengirim pesan pertama</p>
+                        <p style="color: var(--text-light); font-size: 14px;">Mulai percakapan dengan mengirim pesan pertama</p>
                     `;
                     chatMessages.appendChild(emptyState);
                 } else {
