@@ -957,12 +957,23 @@
             loadChatList();
         }
 
-        function logout() {
-            currentUser = null;
-            localStorage.removeItem('currentUser');
-            showPage(loginPage);
-            nameInput.value = '';
+        async function logout() {
+    if (currentUser) {
+        try {
+            await fetch(`${API_BASE}/users/${currentUser.userId}`, {
+                method: 'DELETE'
+            });
+        } catch (error) {
+            console.error('Error deleting user:', error);
         }
+    }
+    
+    currentUser = null;
+    localStorage.removeItem('currentUser');
+    showPage(loginPage);
+    nameInput.value = '';
+    showNotification('👋 Logout berhasil! Data Anda telah dihapus');
+}
 
         async function searchUsers(query) {
             if (!query.trim()) {
