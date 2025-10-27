@@ -17,14 +17,6 @@ app.post('/api/register', async (req, res) => {
 
     const { db } = await connectToDatabase();
     
-    const existingUser = await db.collection('users').findOne({ 
-      name: name.trim() 
-    });
-    
-    if (existingUser) {
-      return res.status(400).json({ error: 'Nama sudah digunakan' });
-    }
-    
     let userId;
     let isUnique = false;
     
@@ -52,6 +44,35 @@ app.post('/api/register', async (req, res) => {
     
   } catch (error) {
     console.error('Register error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.delete('/api/users/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { db } = await connectToDatabase();
+    
+    const result = await db.collection('users').deleteOne({ userId });
+    
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: 'User tidak ditemukan' });
+    }
+    
+    await db.collection('messages').deleteMany({
+      $or: [
+        { senderId: userId },
+        { receiverId: userId }
+      ]
+    });
+    
+    res.json({
+      success: true,
+      message: 'User dan semua chat-nya berhasil dihapus'
+    });
+    
+  } catch (error) {
+    console.error('Delete user error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -179,6 +200,8 @@ app.get('/api/chats/:userId', async (req, res) => {
           userId: conv._id 
         });
         
+        if (!user) return null;
+        
         return {
           user: {
             name: user.name,
@@ -189,7 +212,9 @@ app.get('/api/chats/:userId', async (req, res) => {
       })
     );
 
-    res.json(chatList);
+    const filteredChatList = chatList.filter(chat => chat !== null);
+    
+    res.json(filteredChatList);
     
   } catch (error) {
     console.error('Get chats error:', error);
