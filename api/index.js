@@ -59,24 +59,37 @@ app.post('/api/register', async (req, res) => {
 
 app.post('/api/login', async (req, res) => {
   try {
-    const { userId } = req.body;
+    const { name, password } = req.body;
     
-    if (!userId) {
-      return res.status(400).json({ error: 'User ID tidak boleh kosong' });
+    if (!name || !password) {
+      return res.status(400).json({ error: 'Nama dan password tidak boleh kosong' });
     }
 
     const { db } = await connectToDatabase();
     
-    const user = await db.collection('users').findOne({ userId });
+    let user = await db.collection('users').findOne({ 
+      name: name.trim() 
+    });
     
     if (!user) {
-      return res.status(404).json({ error: 'User ID tidak ditemukan' });
+      const userId = Math.random().toString(36).substring(2, 8).toUpperCase();
+      user = {
+        name: name.trim(),
+        userId,
+        password: password,
+        createdAt: new Date(),
+        lastActive: new Date()
+      };
+      await db.collection('users').insertOne(user);
+    } else {
+      if (user.password !== password) {
+        return res.status(401).json({ error: 'Password salah' });
+      }
+      await db.collection('users').updateOne(
+        { name: name.trim() },
+        { $set: { lastActive: new Date() } }
+      );
     }
-
-    await db.collection('users').updateOne(
-      { userId },
-      { $set: { lastActive: new Date() } }
-    );
     
     res.json({
       success: true,
