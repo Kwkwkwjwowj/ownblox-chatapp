@@ -22,6 +22,8 @@
             --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
             --chat-bg-sent: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
             --chat-bg-received: var(--surface);
+            --error: #ef4444;
+            --success: #10b981;
         }
 
         * {
@@ -776,6 +778,18 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--primary-dark);
         }
+
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            padding: 4px;
+        }
     </style>
 </head>
 <body>
@@ -793,51 +807,42 @@
         </div>
 
         <div class="page active" id="login-page">
-    <div class="login-card">
-        <div class="login-icon">💬</div>
-        <h2>Mulai Percakapan</h2>
-        
-        <div class="auth-tabs" style="display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid var(--border);">
-            <button class="auth-tab active" id="show-register-btn" style="flex: 1; background: none; border: none; padding: 12px; font-weight: 600; color: var(--primary-blue); border-bottom: 2px solid var(--primary-blue); cursor: pointer;">Daftar Baru</button>
-            <button class="auth-tab" id="show-login-btn" style="flex: 1; background: none; border: none; padding: 12px; font-weight: 600; color: var(--text-light); border-bottom: 2px solid transparent; cursor: pointer;">Login dengan ID</button>
-        </div>
-
-        <div id="register-form">
-            <p style="color: var(--text-secondary); margin-bottom: 25px; font-size: 14px; line-height: 1.5;">Daftar dengan nama baru untuk mendapatkan ID unik</p>
-            
-            <div class="form-group">
-                <label for="name-input">Nama Anda</label>
-                <input type="text" id="name-input" class="form-control" placeholder="Masukkan nama lengkap Anda">
+            <div class="login-card">
+                <div class="login-icon">💬</div>
+                <h2>Masuk ke 
+                OwnBlox ChatApp</h2>
+                <p>Login dengan nama dan password Anda</p>
+                
+                <div class="form-group">
+                    <label for="name-input">Nama Anda</label>
+                    <input type="text" id="name-input" class="form-control" placeholder="Masukkan nama Anda">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password-input">Password</label>
+                    <div style="position: relative;">
+                        <input type="password" id="password-input" class="form-control" placeholder="Masukkan password">
+                        <button type="button" class="password-toggle" onclick="togglePassword()">👁️</button>
+                    </div>
+                </div>
+                
+                <button class="btn-primary" id="login-btn">
+                    Masuk
+                </button>
+                
+                <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border);">
+                    <p style="font-size: 13px; color: var(--text-light); line-height: 1.4;">
+                        Belum punya akun? Password akan dibuat otomatis saat pertama kali daftar.
+                    </p>
+                </div>
             </div>
-            
-            <button class="btn-primary" id="register-btn">
-                Daftar & Mulai Chat
-            </button>
         </div>
-
-        <div id="login-form" style="display: none;">
-            <p style="color: var(--text-secondary); margin-bottom: 25px; font-size: 14px; line-height: 1.5;">Masuk dengan User ID yang sudah ada</p>
-            
-            <div class="form-group">
-                <label for="user-id-input">User ID Anda</label>
-                <input type="text" id="user-id-input" class="form-control" placeholder="Masukkan User ID Anda">
-            </div>
-            <button class="btn-primary" id="login-with-id-btn">Login</button>
-        </div>
-        
-        <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border);">
-            <p style="font-size: 13px; color: var(--text-light); line-height: 1.4;">
-                Setelah mendaftar, Anda akan mendapatkan ID unik yang dapat dibagikan kepada teman untuk memulai percakapan.
-            </p>
-        </div>
-    </div>
-</div>
 
         <div class="page" id="chats-page">
             <div class="search-container">
                 <div class="search-box">
                     <div class="search-icon">🔍</div>
-                    <input type="text" id="search-input" class="search-input" placeholder="Cari pengguna dengan ID...">
+                    <input type="text" id="search-input" class="search-input" placeholder="Cari pengguna dengan ID atau nama...">
                     <div class="search-results" id="search-results"></div>
                 </div>
             </div>
@@ -923,474 +928,441 @@
 
     <script>
         const API_BASE = '/api';
-let currentUser = null;
-let currentChatWith = null;
-let replyingToMessage = null;
+        let currentUser = null;
+        let currentChatWith = null;
+        let replyingToMessage = null;
 
-const loginPage = document.getElementById('login-page');
-const chatsPage = document.getElementById('chats-page');
-const chatPage = document.getElementById('chat-page');
-const profilePage = document.getElementById('profile-page');
-const nameInput = document.getElementById('name-input');
-const registerBtn = document.getElementById('register-btn');
-const profileBtn = document.getElementById('profile-btn');
-const logoutBtn = document.getElementById('logout-btn');
-const headerUserId = document.getElementById('header-user-id');
-const searchInput = document.getElementById('search-input');
-const searchResults = document.getElementById('search-results');
-const chatList = document.getElementById('chat-list');
-const chatBackBtn = document.getElementById('chat-back-btn');
-const chatWithName = document.getElementById('chat-with-name');
-const chatWithAvatar = document.getElementById('chat-with-avatar');
-const chatMessages = document.getElementById('chat-messages');
-const messageInput = document.getElementById('message-input');
-const sendBtn = document.getElementById('send-btn');
-const profileAvatar = document.getElementById('profile-avatar');
-const profileName = document.getElementById('profile-name');
-const profileId = document.getElementById('profile-id');
-const backFromProfileBtn = document.getElementById('back-from-profile-btn');
-const notification = document.getElementById('notification');
-const replyPreview = document.getElementById('reply-preview');
-const replySenderName = document.getElementById('reply-sender-name');
-const replyTextPreview = document.getElementById('reply-text-preview');
-const cancelReplyBtn = document.getElementById('cancel-reply-btn');
-const userIdInput = document.getElementById('user-id-input');
-const loginWithIdBtn = document.getElementById('login-with-id-btn');
-const showLoginBtn = document.getElementById('show-login-btn');
-const showRegisterBtn = document.getElementById('show-register-btn');
-const loginForm = document.getElementById('login-form');
-const registerForm = document.getElementById('register-form');
+        const loginPage = document.getElementById('login-page');
+        const chatsPage = document.getElementById('chats-page');
+        const chatPage = document.getElementById('chat-page');
+        const profilePage = document.getElementById('profile-page');
+        const nameInput = document.getElementById('name-input');
+        const passwordInput = document.getElementById('password-input');
+        const loginBtn = document.getElementById('login-btn');
+        const profileBtn = document.getElementById('profile-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const headerUserId = document.getElementById('header-user-id');
+        const searchInput = document.getElementById('search-input');
+        const searchResults = document.getElementById('search-results');
+        const chatList = document.getElementById('chat-list');
+        const chatBackBtn = document.getElementById('chat-back-btn');
+        const chatWithName = document.getElementById('chat-with-name');
+        const chatWithAvatar = document.getElementById('chat-with-avatar');
+        const chatMessages = document.getElementById('chat-messages');
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+        const profileAvatar = document.getElementById('profile-avatar');
+        const profileName = document.getElementById('profile-name');
+        const profileId = document.getElementById('profile-id');
+        const backFromProfileBtn = document.getElementById('back-from-profile-btn');
+        const notification = document.getElementById('notification');
+        const replyPreview = document.getElementById('reply-preview');
+        const replySenderName = document.getElementById('reply-sender-name');
+        const replyTextPreview = document.getElementById('reply-text-preview');
+        const cancelReplyBtn = document.getElementById('cancel-reply-btn');
 
-function showNotification(message, duration = 3000) {
-    notification.textContent = message;
-    notification.style.display = 'block';
-    setTimeout(() => {
-        notification.style.display = 'none';
-    }, duration);
-}
-
-function getInitials(name) {
-    return name.split(' ').map(word => word[0]).join('').toUpperCase();
-}
-
-function formatTime(timestamp) {
-    const date = new Date(timestamp);
-    return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-}
-
-function showPage(page) {
-    loginPage.classList.remove('active');
-    chatsPage.classList.remove('active');
-    chatPage.classList.remove('active');
-    profilePage.classList.remove('active');
-    page.classList.add('active');
-}
-
-function showLoginForm() {
-    registerForm.style.display = 'none';
-    loginForm.style.display = 'block';
-}
-
-function showRegisterForm() {
-    loginForm.style.display = 'none';
-    registerForm.style.display = 'block';
-}
-
-async function registerUser(name) {
-    try {
-        const response = await fetch(`${API_BASE}/register`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ name })
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            loginUser(data.user);
-            showNotification('🎉 Registrasi berhasil!');
-        } else {
-            showNotification(data.error || 'Gagal mendaftar');
+        function togglePassword() {
+            const passwordField = document.getElementById('password-input');
+            const toggleBtn = document.querySelector('.password-toggle');
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleBtn.textContent = '🔒';
+            } else {
+                passwordField.type = 'password';
+                toggleBtn.textContent = '👁️';
+            }
         }
-    } catch (error) {
-        showNotification('⚠️ Error koneksi ke server');
-    }
-}
 
-async function loginWithUserId(userId) {
-    try {
-        const response = await fetch(`${API_BASE}/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ userId })
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            loginUser(data.user);
-            showNotification('🎉 Login berhasil!');
-        } else {
-            showNotification(data.error || 'Login gagal');
+        function showNotification(message, duration = 3000) {
+            notification.textContent = message;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, duration);
         }
-    } catch (error) {
-        showNotification('⚠️ Error koneksi ke server');
-    }
-}
 
-function loginUser(user) {
-    currentUser = user;
-    headerUserId.textContent = `ID: ${user.userId}`;
-    profileAvatar.textContent = getInitials(user.name);
-    profileName.textContent = user.name;
-    profileId.textContent = user.userId;
-    
-    showPage(chatsPage);
-    loadChatList();
-}
-
-async function logout() {
-    if (currentUser) {
-        try {
-            await fetch(`${API_BASE}/users/${currentUser.userId}`, {
-                method: 'DELETE'
-            });
-        } catch (error) {
-            console.error('Error deleting user:', error);
+        function getInitials(name) {
+            return name.split(' ').map(word => word[0]).join('').toUpperCase();
         }
-    }
-    
-    currentUser = null;
-    showPage(loginPage);
-    nameInput.value = '';
-    userIdInput.value = '';
-    showNotification('👋 Logout berhasil! Data Anda telah dihapus');
-}
 
-async function searchUsers(query) {
-    if (!query.trim()) {
-        searchResults.classList.remove('active');
-        return;
-    }
-    
-    try {
-        const response = await fetch(`${API_BASE}/search/${query}`);
-        const users = await response.json();
-        
-        searchResults.innerHTML = '';
-        
-        if (users.length === 0) {
-            showNoResults();
-        } else {
-            users.forEach(user => {
-                if (user.userId === currentUser?.userId) return;
-                
-                const resultItem = document.createElement('div');
-                resultItem.className = 'search-result-item';
-                resultItem.innerHTML = `
-                    <div class="search-avatar">${getInitials(user.name)}</div>
-                    <div style="min-width: 0;">
-                        <div style="font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${user.name}</div>
-                        <div style="font-size: 11px; color: var(--text-light);">ID: ${user.userId}</div>
-                    </div>
-                `;
-                resultItem.addEventListener('click', () => {
-                    startChat(user);
-                    searchInput.value = '';
-                    searchResults.classList.remove('active');
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+        }
+
+        function showPage(page) {
+            loginPage.classList.remove('active');
+            chatsPage.classList.remove('active');
+            chatPage.classList.remove('active');
+            profilePage.classList.remove('active');
+            page.classList.add('active');
+        }
+
+        async function loginUser() {
+            const name = nameInput.value.trim();
+            const password = passwordInput.value.trim();
+            
+            if (!name || !password) {
+                showNotification('⚠️ Silakan isi nama dan password');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, password })
                 });
-                searchResults.appendChild(resultItem);
-            });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    localStorage.setItem('userData', JSON.stringify(data.user));
+                    currentUser = data.user;
+                    
+                    headerUserId.textContent = `ID: ${data.user.userId}`;
+                    profileAvatar.textContent = getInitials(data.user.name);
+                    profileName.textContent = data.user.name;
+                    profileId.textContent = data.user.userId;
+                    
+                    showPage(chatsPage);
+                    loadChatList();
+                    showNotification('🎉 Login berhasil!');
+                } else {
+                    showNotification(data.error || 'Login gagal');
+                }
+            } catch (error) {
+                showNotification('⚠️ Error koneksi ke server');
+            }
+        }
+
+        function loginUserFromStorage(user) {
+            currentUser = user;
+            headerUserId.textContent = `ID: ${user.userId}`;
+            profileAvatar.textContent = getInitials(user.name);
+            profileName.textContent = user.name;
+            profileId.textContent = user.userId;
+            showPage(chatsPage);
+            loadChatList();
+        }
+
+        async function logout() {
+            currentUser = null;
+            localStorage.removeItem('userData');
+            showPage(loginPage);
+            nameInput.value = '';
+            passwordInput.value = '';
+            showNotification('👋 Logout berhasil!');
+        }
+
+        async function searchUsers(query) {
+            if (!query.trim()) {
+                searchResults.classList.remove('active');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/search/${query}`);
+                const users = await response.json();
+                
+                searchResults.innerHTML = '';
+                
+                if (users.length === 0) {
+                    showNoResults();
+                } else {
+                    users.forEach(user => {
+                        if (user.userId === currentUser?.userId) return;
+                        
+                        const resultItem = document.createElement('div');
+                        resultItem.className = 'search-result-item';
+                        resultItem.innerHTML = `
+                            <div class="search-avatar">${getInitials(user.name)}</div>
+                            <div style="min-width: 0;">
+                                <div style="font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${user.name}</div>
+                                <div style="font-size: 11px; color: var(--text-light);">ID: ${user.userId}</div>
+                            </div>
+                        `;
+                        resultItem.addEventListener('click', () => {
+                            startChat(user);
+                            searchInput.value = '';
+                            searchResults.classList.remove('active');
+                        });
+                        searchResults.appendChild(resultItem);
+                    });
+                    searchResults.classList.add('active');
+                }
+            } catch (error) {
+                showNoResults();
+            }
+        }
+
+        function showNoResults() {
+            searchResults.innerHTML = '';
+            const noResult = document.createElement('div');
+            noResult.className = 'search-result-item';
+            noResult.style.justifyContent = 'center';
+            noResult.style.color = 'var(--text-light)';
+            noResult.style.fontSize = '14px';
+            noResult.textContent = 'Tidak ada pengguna ditemukan';
+            searchResults.appendChild(noResult);
             searchResults.classList.add('active');
         }
-    } catch (error) {
-        showNoResults();
-    }
-}
 
-function showNoResults() {
-    searchResults.innerHTML = '';
-    const noResult = document.createElement('div');
-    noResult.className = 'search-result-item';
-    noResult.style.justifyContent = 'center';
-    noResult.style.color = 'var(--text-light)';
-    noResult.style.fontSize = '14px';
-    noResult.textContent = 'Tidak ada pengguna ditemukan';
-    searchResults.appendChild(noResult);
-    searchResults.classList.add('active');
-}
+        function startChat(user) {
+            currentChatWith = user;
+            chatWithName.textContent = user.name;
+            chatWithAvatar.textContent = getInitials(user.name);
+            showPage(chatPage);
+            loadChatMessages();
+            
+            setTimeout(() => {
+                messageInput.focus();
+            }, 100);
+        }
 
-function startChat(user) {
-    currentChatWith = user;
-    chatWithName.textContent = user.name;
-    chatWithAvatar.textContent = getInitials(user.name);
-    showPage(chatPage);
-    loadChatMessages();
-    
-    setTimeout(() => {
-        messageInput.focus();
-    }, 100);
-}
+        async function loadChatList() {
+            try {
+                const response = await fetch(`${API_BASE}/chats/${currentUser.userId}`);
+                const chats = await response.json();
+                
+                chatList.innerHTML = '';
+                
+                if (chats.length === 0) {
+                    const noChats = document.createElement('div');
+                    noChats.className = 'empty-state';
+                    noChats.innerHTML = `
+                        <div class="empty-state-icon">💬</div>
+                        <h3 style="margin-bottom: 8px; color: var(--text-secondary); font-size: 16px;">Belum ada percakapan</h3>
+                        <p style="color: var(--text-light); font-size: 14px;">Cari pengguna lain untuk memulai chat pertama Anda</p>
+                    `;
+                    chatList.appendChild(noChats);
+                } else {
+                    chats.forEach(chat => {
+                        const chatItem = document.createElement('div');
+                        chatItem.className = 'chat-item';
+                        chatItem.innerHTML = `
+                            <div class="chat-avatar">${getInitials(chat.user.name)}</div>
+                            <div class="chat-info">
+                                <div class="chat-name">${chat.user.name}</div>
+                                <div class="chat-last-message">${chat.lastMessage.text}</div>
+                            </div>
+                            <div class="chat-timestamp">${formatTime(chat.lastMessage.timestamp)}</div>
+                        `;
+                        chatItem.addEventListener('click', () => startChat(chat.user));
+                        chatList.appendChild(chatItem);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading chats:', error);
+            }
+        }
 
-async function loadChatList() {
-    try {
-        const response = await fetch(`${API_BASE}/chats/${currentUser.userId}`);
-        const chats = await response.json();
-        
-        chatList.innerHTML = '';
-        
-        if (chats.length === 0) {
-            const noChats = document.createElement('div');
-            noChats.className = 'empty-state';
-            noChats.innerHTML = `
-                <div class="empty-state-icon">💬</div>
-                <h3 style="margin-bottom: 8px; color: var(--text-secondary); font-size: 16px;">Belum ada percakapan</h3>
-                <p style="color: var(--text-light); font-size: 14px;">Cari pengguna lain untuk memulai chat pertama Anda</p>
-            `;
-            chatList.appendChild(noChats);
-        } else {
-            chats.forEach(chat => {
-                const chatItem = document.createElement('div');
-                chatItem.className = 'chat-item';
-                chatItem.innerHTML = `
-                    <div class="chat-avatar">${getInitials(chat.user.name)}</div>
-                    <div class="chat-info">
-                        <div class="chat-name">${chat.user.name}</div>
-                        <div class="chat-last-message">${chat.lastMessage.text}</div>
+        async function loadChatMessages() {
+            try {
+                const response = await fetch(`${API_BASE}/messages/${currentUser.userId}/${currentChatWith.userId}`);
+                const messages = await response.json();
+                
+                chatMessages.innerHTML = '';
+                
+                if (messages.length === 0) {
+                    const emptyState = document.createElement('div');
+                    emptyState.className = 'empty-state';
+                    emptyState.innerHTML = `
+                        <div class="empty-state-icon">💭</div>
+                        <p style="color: var(--text-light); font-size: 14px;">Mulai percakapan dengan mengirim pesan pertama</p>
+                    `;
+                    chatMessages.appendChild(emptyState);
+                } else {
+                    messages.forEach(message => {
+                        const messageEl = createMessageElement(message);
+                        chatMessages.appendChild(messageEl);
+                    });
+                }
+                
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            } catch (error) {
+                console.error('Error loading messages:', error);
+            }
+        }
+
+        function createMessageElement(message) {
+            const messageEl = document.createElement('div');
+            messageEl.className = `message ${message.senderId === currentUser.userId ? 'sent' : 'received'}`;
+            
+            let contentHTML = '';
+            
+            if (message.replyTo) {
+                const replySender = message.replyTo.senderId === currentUser.userId ? 'Anda' : currentChatWith.name;
+                contentHTML += `
+                    <div class="reply-indicator">
+                        <div class="reply-sender">Membalas ${replySender}</div>
+                        <div class="reply-text">${message.replyTo.text}</div>
                     </div>
-                    <div class="chat-timestamp">${formatTime(chat.lastMessage.timestamp)}</div>
                 `;
-                chatItem.addEventListener('click', () => startChat(chat.user));
-                chatList.appendChild(chatItem);
-            });
-        }
-    } catch (error) {
-        console.error('Error loading chats:', error);
-    }
-}
-
-async function loadChatMessages() {
-    try {
-        const response = await fetch(`${API_BASE}/messages/${currentUser.userId}/${currentChatWith.userId}`);
-        const messages = await response.json();
-        
-        chatMessages.innerHTML = '';
-        
-        if (messages.length === 0) {
-            const emptyState = document.createElement('div');
-            emptyState.className = 'empty-state';
-            emptyState.innerHTML = `
-                <div class="empty-state-icon">💭</div>
-                <p style="color: var(--text-light); font-size: 14px;">Mulai percakapan dengan mengirim pesan pertama</p>
+            }
+            
+            if (message.text) {
+                contentHTML += `<div>${message.text}</div>`;
+            }
+            
+            contentHTML += `<div class="message-time">${formatTime(message.timestamp)}</div>`;
+            
+            contentHTML += `
+                <div class="message-actions">
+                    ${message.senderId === currentUser.userId ? `
+                        <button class="message-action-btn" onclick="deleteMessage('${message._id}')" title="Hapus" style="color: #ef4444;">
+                            🗑️
+                        </button>
+                    ` : ''}
+                    <button class="message-action-btn" onclick="replyToMessage('${message._id}', '${message.text}')" title="Balas">
+                        ↩
+                    </button>
+                </div>
             `;
-            chatMessages.appendChild(emptyState);
-        } else {
-            messages.forEach(message => {
-                const messageEl = createMessageElement(message);
-                chatMessages.appendChild(messageEl);
-            });
+            
+            messageEl.innerHTML = contentHTML;
+            return messageEl;
         }
-        
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    } catch (error) {
-        console.error('Error loading messages:', error);
-    }
-}
 
-function createMessageElement(message) {
-    const messageEl = document.createElement('div');
-    messageEl.className = `message ${message.senderId === currentUser.userId ? 'sent' : 'received'}`;
-    
-    let contentHTML = '';
-    
-    if (message.replyTo) {
-        const replySender = message.replyTo.senderId === currentUser.userId ? 'Anda' : currentChatWith.name;
-        contentHTML += `
-            <div class="reply-indicator">
-                <div class="reply-sender">Membalas ${replySender}</div>
-                <div class="reply-text">${message.replyTo.text}</div>
-            </div>
-        `;
-    }
-    
-    if (message.text) {
-        contentHTML += `<div>${message.text}</div>`;
-    }
-    
-    contentHTML += `<div class="message-time">${formatTime(message.timestamp)}</div>`;
-    
-    contentHTML += `
-        <div class="message-actions">
-            ${message.senderId === currentUser.userId ? `
-                <button class="message-action-btn" onclick="deleteMessage('${message._id}')" title="Hapus" style="color: #ef4444;">
-                    🗑️
-                </button>
-            ` : ''}
-            <button class="message-action-btn" onclick="replyToMessage('${message._id}', '${message.text}')" title="Balas">
-                ↩
-            </button>
-        </div>
-    `;
-    
-    messageEl.innerHTML = contentHTML;
-    return messageEl;
-}
+        function replyToMessage(messageId, messageText) {
+            const senderName = currentChatWith.name;
+            replyingToMessage = { messageId, messageText };
+            replySenderName.textContent = senderName;
+            replyTextPreview.textContent = messageText.length > 50 ? messageText.substring(0, 50) + '...' : messageText;
+            replyPreview.style.display = 'flex';
+            messageInput.focus();
+        }
 
-function replyToMessage(messageId, messageText) {
-    const senderName = currentChatWith.name;
-    replyingToMessage = { messageId, messageText };
-    replySenderName.textContent = senderName;
-    replyTextPreview.textContent = messageText.length > 50 ? messageText.substring(0, 50) + '...' : messageText;
-    replyPreview.style.display = 'flex';
-    messageInput.focus();
-}
+        function cancelReply() {
+            replyingToMessage = null;
+            replyPreview.style.display = 'none';
+        }
 
-function cancelReply() {
-    replyingToMessage = null;
-    replyPreview.style.display = 'none';
-}
+        async function deleteMessage(messageId) {
+            if (!confirm('Hapus pesan ini?')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/messages/${messageId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    showNotification('✅ Pesan dihapus');
+                    loadChatMessages();
+                    loadChatList();
+                } else {
+                    showNotification('❌ Gagal menghapus pesan');
+                }
+            } catch (error) {
+                showNotification('⚠️ Error menghapus pesan');
+            }
+        }
 
-async function deleteMessage(messageId) {
-    if (!confirm('Hapus pesan ini?')) return;
-    
-    try {
-        const response = await fetch(`${API_BASE}/messages/${messageId}`, {
-            method: 'DELETE'
+        async function sendMessage() {
+            const text = messageInput.value.trim();
+            
+            if (!text && !replyingToMessage) return;
+            
+            try {
+                const messageData = {
+                    senderId: currentUser.userId,
+                    receiverId: currentChatWith.userId,
+                    text: text
+                };
+                
+                if (replyingToMessage) {
+                    messageData.replyTo = replyingToMessage;
+                }
+                
+                const response = await fetch(`${API_BASE}/messages`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(messageData)
+                });
+                
+                if (response.ok) {
+                    messageInput.value = '';
+                    cancelReply();
+                    loadChatMessages();
+                    loadChatList();
+                    showNotification('✅ Pesan terkirim!');
+                } else {
+                    showNotification('❌ Gagal mengirim pesan');
+                }
+            } catch (error) {
+                showNotification('⚠️ Error mengirim pesan');
+            }
+        }
+
+        loginBtn.addEventListener('click', loginUser);
+
+        nameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                loginUser();
+            }
         });
-        
-        if (response.ok) {
-            showNotification('✅ Pesan dihapus');
-            loadChatMessages();
-            loadChatList();
-        } else {
-            showNotification('❌ Gagal menghapus pesan');
-        }
-    } catch (error) {
-        showNotification('⚠️ Error menghapus pesan');
-    }
-}
 
-async function sendMessage() {
-    const text = messageInput.value.trim();
-    
-    if (!text && !replyingToMessage) return;
-    
-    try {
-        const messageData = {
-            senderId: currentUser.userId,
-            receiverId: currentChatWith.userId,
-            text: text
-        };
-        
-        if (replyingToMessage) {
-            messageData.replyTo = replyingToMessage;
-        }
-        
-        const response = await fetch(`${API_BASE}/messages`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(messageData)
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                loginUser();
+            }
         });
-        
-        if (response.ok) {
-            messageInput.value = '';
+
+        profileBtn.addEventListener('click', () => {
+            showPage(profilePage);
+        });
+
+        logoutBtn.addEventListener('click', logout);
+
+        searchInput.addEventListener('input', (e) => {
+            searchUsers(e.target.value);
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                searchResults.classList.remove('active');
+            }
+        });
+
+        chatBackBtn.addEventListener('click', () => {
+            showPage(chatsPage);
+            currentChatWith = null;
             cancelReply();
-            loadChatMessages();
-            loadChatList();
-            showNotification('✅ Pesan terkirim!');
-        } else {
-            showNotification('❌ Gagal mengirim pesan');
+        });
+
+        sendBtn.addEventListener('click', sendMessage);
+
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        backFromProfileBtn.addEventListener('click', () => {
+            showPage(chatsPage);
+        });
+
+        cancelReplyBtn.addEventListener('click', cancelReply);
+
+        function initApp() {
+            const savedUser = localStorage.getItem('userData');
+            if (savedUser) {
+                const user = JSON.parse(savedUser);
+                loginUserFromStorage(user);
+            } else {
+                showPage(loginPage);
+            }
         }
-    } catch (error) {
-        showNotification('⚠️ Error mengirim pesan');
-    }
-}
 
-registerBtn.addEventListener('click', () => {
-    const name = nameInput.value.trim();
-    if (name) {
-        registerUser(name);
-    } else {
-        showNotification('⚠️ Silakan masukkan nama Anda');
-    }
-});
+        document.addEventListener('DOMContentLoaded', initApp);
 
-loginWithIdBtn.addEventListener('click', () => {
-    const userId = userIdInput.value.trim();
-    if (userId) {
-        loginWithUserId(userId);
-    } else {
-        showNotification('⚠️ Silakan masukkan User ID');
-    }
-});
-
-showLoginBtn.addEventListener('click', showLoginForm);
-showRegisterBtn.addEventListener('click', showRegisterForm);
-
-profileBtn.addEventListener('click', () => {
-    showPage(profilePage);
-});
-
-logoutBtn.addEventListener('click', logout);
-
-searchInput.addEventListener('input', (e) => {
-    searchUsers(e.target.value);
-});
-
-document.addEventListener('click', (e) => {
-    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-        searchResults.classList.remove('active');
-    }
-});
-
-chatBackBtn.addEventListener('click', () => {
-    showPage(chatsPage);
-    currentChatWith = null;
-    cancelReply();
-});
-
-sendBtn.addEventListener('click', sendMessage);
-
-messageInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        sendMessage();
-    }
-});
-
-backFromProfileBtn.addEventListener('click', () => {
-    showPage(chatsPage);
-});
-
-cancelReplyBtn.addEventListener('click', cancelReply);
-
-userIdInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        const userId = userIdInput.value.trim();
-        if (userId) {
-            loginWithUserId(userId);
-        }
-    }
-});
-
-nameInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        const name = nameInput.value.trim();
-        if (name) {
-            registerUser(name);
-        }
-    }
-});
-
-showRegisterForm();
-
-window.replyToMessage = replyToMessage;
-window.deleteMessage = deleteMessage;
+        window.replyToMessage = replyToMessage;
+        window.deleteMessage = deleteMessage;
+        window.togglePassword = togglePassword;
     </script>
 </body>
 </html>
