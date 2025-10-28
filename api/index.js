@@ -306,15 +306,15 @@ app.get('/api/chats/:userId', async (req, res) => {
 app.get('/api/cleanup', async (req, res) => {
   try {
     const { db } = await connectToDatabase();
-    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     
     const result = await db.collection('messages')
       .deleteMany({ 
-        timestamp: { $lt: yesterday } 
+        timestamp: { $lt: sevenDaysAgo } 
       });
     
     res.json({
-      message: `Deleted ${result.deletedCount} old messages`,
+      message: `Deleted ${result.deletedCount} messages older than 7 days`,
       deletedCount: result.deletedCount
     });
     
