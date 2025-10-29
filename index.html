@@ -1168,7 +1168,6 @@ async function loadChatMessages() {
         const response = await fetch(`${API_BASE}/messages/${currentUser.userId}/${currentChatWith.userId}`);
         const messages = await response.json();
         
-        // TAMBAH INI - Hitung pesan sebelumnya
         const currentMessageCount = chatMessages.children.length;
         
         chatMessages.innerHTML = '';
